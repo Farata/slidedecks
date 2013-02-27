@@ -1,0 +1,9 @@
+ ☐ Launch of demo app (Stocks demo)
+ ☐ Open Developer tools (network->websocket) and chrome://net-internals
+ ☐ Show amount of data for WebSocket (including handshake), compare HTTP header data and frame metadata overhead
+ ☐ Do restfull request call and show results in devtools + net-internals. show the bytes
+ ☐ Slides traditional http (polling, long polling, streaming)
+ ☐ HTML5 to the rescue SSE. Show same usecase with pushig data from server via sse.
+ ☐ Slide with amount of data (for example, in case of WebSocket - 50 bytes, http 500 bytes, sse 200 bytes)
+ ☐ Websocket anatomy (handshare, upgrade, etc)
+ ☐ Websocket not only for web (java or ios native example)
