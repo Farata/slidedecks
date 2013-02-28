@@ -29,12 +29,68 @@ v0.1, Feb 24, 2013
 :syntax: no-highlight
 
 [{topic}]
+== About Myself
+
+A software architect at the software boutique http://faratasystems.com[Farata Systems]
+A co-author of the upcoming O'Reilly book "Enterprise Web Development"
+Main skills: Java and HTML5
+
+image::images/cover.png[]
+
+
+[{topic}]
 == Agenda
 
 [{stepwise}]
-- Bit Of History
+- Demo 
+- What went over the wire
+- How Server-Side Events would do this
+- How the legacy HTTP would do this
 - Meet WebSocket
-- WebSocket in Action
+- What's one the server
+- How about proxies
+- A word about security
+
+[{topic}]
+== Demo: Server-Side Push with WebSockets
+
+[{stepwise}]
+The cast:
+
+- Server: Oracle GlassFish 4, that supports 
+- Client: HTML/JavaScript/Ext JS framework
+- Browser: Google Chrome 
+
+The plot:
+- client and server use two WebScocket connections and start 
+     a. Pushing market data quotes (10 per second). Portfolio size: 50 stocks
+     b. Pushing Order execution notifications
+
+TODO: Add an image of the architecture of the demo
+
+
+==  Running Demo
+
+[{topic}]
+==  Counting overhead
+
+Every data push had:
+
+Payload size: Market data: from 23 to 25 bytes, Order notification: 30 bytes 
+WebSocket overhead: 2 bytes in each case
+
+TODO: Add a sample JSON string for market data and for order execution   
+
+[{topic}]
+==  What's HTML5 WebSocket
+
+[{stepwise}]
+- It's HTML5 standard API
+- It's a full duplex protocol
+- Starts as a handshake via open ports 80 and 443
+- Upgrades the protocol from HTTP to Websockets
+- From this point no more HTTP
+
 
 //image::HTML5_Connectivity_512.png[role="middle", scaleheight=50%, scaleweight=50%] 
 
@@ -48,15 +104,58 @@ v0.1, Feb 24, 2013
 
 == ||
 
-*POLLING*
+*Polling*
 
 Browser sends HTTP requests at regular intervals and immediately receives a response. However, real- time data is often not that predictable, making unnecessary requests inevitable and as a result, many connections are opened and closed needlessly in low-message-rate situations
 
+image::images/fig_09_01.png[]
+
 == ||
 
-*LONG-POLLING*
+*Long Polling*
 
 Browser sends a request to the server and the server keeps the request open for a set period of time. If a notification is received within that period, a response containing the message is sent to the client. If a notification is not received within the set time period, the server sends a response to terminate the open request.
+
+image::images/fig_09_02.png[]
+
+== ||
+
+*Streaming*
+
+
+image::images/fig_09_03.png[]
+
+[{topic}]
+== Demo of HTTP Request-Response
+
+[{stepwise}]
+1. Make one HTTP request to the same server (market data)
+2. Analyze HTTP overhead using Google Developer Tools
+
+[{topic}]
+== Server-Side Events
+
+What are SSE?
+
+[{topic}]
+== Demo of the Data Push with SSE
+
+[{stepwise}]
+1. The same server pushes market data using SSE 
+2. Analyze SSE overhead using Google Developer Tools
+
+[{topic}]
+== Comparing Overhead: HTTP vs SSE vs WebSocket
+
+1. HTP added 478 bytes on top of the data load
+2. SSE added 236 bytes 
+3. WebSocket added 2 bytes
+
+[{topic}]
+==WebSocket JavaScript API
+
+TODO:
+
 
 == ||
 
@@ -73,43 +172,9 @@ ____
 * CLIENT-SIDE API [detail]#HTML5 specification introduces WebSocket client side object. No plugin required#
 * SERVER-SIDE API [detail]#True real-time server updates. Expected large penetration in Java world with upcoming JavaEE 7 spec and JSR-356#
 
-//[role="topic source lhs"]
-[role="topic"]
-== WebSocket Interface 
-
-[syntax="java"]
-----------------------------------------------------------------------
-[Constructor(DOMString url, optional (DOMString or DOMString[]) protocols)]
-interface WebSocket : EventTarget {
-  readonly attribute DOMString url;
-
-  // ready state
-  const unsigned short CONNECTING = 0;
-  const unsigned short OPEN = 1;
-  const unsigned short CLOSING = 2;
-  const unsigned short CLOSED = 3;
-  readonly attribute unsigned short readyState;
-  readonly attribute unsigned long bufferedAmount;
-
-  // networking
-  [TreatNonCallableAsNull] attribute Function? onopen;
-  [TreatNonCallableAsNull] attribute Function? onerror;
-  [TreatNonCallableAsNull] attribute Function? onclose;
-  readonly attribute DOMString extensions;
-  readonly attribute DOMString protocol;
-  void close([Clamp] optional unsigned short code, optional DOMString reason);
-
-  // messaging
-  [TreatNonCallableAsNull] attribute Function? onmessage;
-           attribute DOMString binaryType;
-  void send(DOMString data);
-  void send(ArrayBufferView data);
-  void send(Blob data);
-};
-----------------------------------------------------------------------
 
 //[role="topic source lhs"]
-== JavaScript API
+== WebSocket JavaScript API
 
 [syntax="javascript"]
 ----------------------------------------------------------------------
@@ -162,6 +227,43 @@ WebSockets really shine with following applications:
 - Multiplayer online games
 - Realtime updating social streams
 
+/[role="topic source lhs"]
+[role="topic"]
+== WebSocket Interface 
+
+[syntax="java"]
+----------------------------------------------------------------------
+[Constructor(DOMString url, optional (DOMString or DOMString[]) protocols)]
+interface WebSocket : EventTarget {
+  readonly attribute DOMString url;
+
+  // ready state
+  const unsigned short CONNECTING = 0;
+  const unsigned short OPEN = 1;
+  const unsigned short CLOSING = 2;
+  const unsigned short CLOSED = 3;
+  readonly attribute unsigned short readyState;
+  readonly attribute unsigned long bufferedAmount;
+
+  // networking
+  [TreatNonCallableAsNull] attribute Function? onopen;
+  [TreatNonCallableAsNull] attribute Function? onerror;
+  [TreatNonCallableAsNull] attribute Function? onclose;
+  readonly attribute DOMString extensions;
+  readonly attribute DOMString protocol;
+  void close([Clamp] optional unsigned short code, optional DOMString reason);
+
+  // messaging
+  [TreatNonCallableAsNull] attribute Function? onmessage;
+           attribute DOMString binaryType;
+  void send(DOMString data);
+  void send(ArrayBufferView data);
+  void send(Blob data);
+};
+----------------------------------------------------------------------
+
+
+
 [{ending}, hrole="name"]
 == Thank you for your attention!
 
@@ -171,13 +273,29 @@ WebSockets really shine with following applications:
 
 ////
 
-== Bunch of links
 
-* http://www.w3.org/TR/websockets/ MUST!
-* http://tools.ietf.org/html/rfc6455 MUST!
+[{topic}]
+== Proxies and WebSockets
+
+We use [http://nginx.com/]NGINX as:
+
+* load balancer between Java server
+*  a proxy server to serve images and text files
+*  SSL offloader (HTTPS to HTTP conversion). 
+
+ Recently NGINX started supporting WebSockets protocol.
+
+== Useful links
+
+* http://enterprisewebbook.com/[Enterprise Web Development book]
+* http://www.w3.org/TR/websockets/ 
+* http://tools.ietf.org/html/rfc6455 
 * http://tomcat.apache.org/tomcat-7.0-doc/web-socket-howto.html
 * http://websocket-sdk.java.net/Introduction.html
 * https://github.com/Atmosphere/atmosphere/wiki/Supported-WebServers-and-Browsers
 * http://autobahn.ws/testsuite
 
-////
+[{topic}]
+== Contact Information
+
+TODO

@@ -7,3 +7,5 @@
  ☐ Slide with amount of data (for example, in case of WebSocket - 50 bytes, http 500 bytes, sse 200 bytes)
  ☐ Websocket anatomy (handshare, upgrade, etc)
  ☐ Websocket not only for web (java or ios native example)
+ ☐ Create a new Web socket and a data feed for the order executions and show them on the East panel
+ 
