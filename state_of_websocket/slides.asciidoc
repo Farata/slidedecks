@@ -31,17 +31,16 @@ v0.1, Feb 24, 2013
 [{topic}]
 == About Myself
 
-A software architect at the software boutique http://faratasystems.com[Farata Systems]
-A co-author of the upcoming O'Reilly book "Enterprise Web Development"
-Main skills: Java and HTML5
+image::cover.png[role='pull-right']
 
-image::images/cover.png[]
-
+- A software architect [detail]#at the software boutique http://faratasystems.com[*Farata Systems*]#
+- A co-author of the upcoming O'Reilly book *"Enterprise Web Development"*
+- Main skills [detail]#*Java* and *HTML5*#
 
 [{topic}]
-== Agenda
+== What I will tell you today
 
-[{stepwise}]
+[role="incremental scatter"]
 - Demo 
 - What went over the wire
 - How Server-Side Events would do this
@@ -55,34 +54,38 @@ image::images/cover.png[]
 == Demo: Server-Side Push with WebSockets
 
 [{stepwise}]
-The cast:
+* The cast:
+** Server [detail]#Oracle GlassFish 4, that supports#
+** Client [detail]#HTML/JavaScript/Ext JS framework#
+** Browser [detail]#Google Chrome#
+* The plot:
+** client and server use two WebScocket connections and start 
+** Pushing market data quotes [detail]#(10 per second). Portfolio size: 50 stocks#
+** Pushing Order execution notifications
 
-- Server: Oracle GlassFish 4, that supports 
-- Client: HTML/JavaScript/Ext JS framework
-- Browser: Google Chrome 
+// TODO: Add an image of the architecture of the demo
 
-The plot:
-- client and server use two WebScocket connections and start 
-     a. Pushing market data quotes (10 per second). Portfolio size: 50 stocks
-     b. Pushing Order execution notifications
+==  \\
 
-TODO: Add an image of the architecture of the demo
-
-
-==  Running Demo
+[{statement}]
+Running Demo
 
 [{topic}]
 ==  Counting overhead
 
 Every data push had:
 
-Payload size: Market data: from 23 to 25 bytes, Order notification: 30 bytes 
-WebSocket overhead: 2 bytes in each case
+* Payload size: 
+** Market data: from 23 to 25 bytes
+** Order notification: 30 bytes 
+* WebSocket overhead: 2 bytes in each case
 
-TODO: Add a sample JSON string for market data and for order execution   
+// TODO: Add a sample JSON string for market data and for order execution   
 
 [{topic}]
 ==  What's HTML5 WebSocket
+
+image::html5_connectivity.png[role="pull-right"]
 
 [{stepwise}]
 - It's HTML5 standard API
@@ -90,7 +93,6 @@ TODO: Add a sample JSON string for market data and for order execution
 - Starts as a handshake via open ports 80 and 443
 - Upgrades the protocol from HTTP to Websockets
 - From this point no more HTTP
-
 
 //image::HTML5_Connectivity_512.png[role="middle", scaleheight=50%, scaleweight=50%] 
 
@@ -102,47 +104,48 @@ TODO: Add a sample JSON string for market data and for order execution
 - Long Polling
 - Streaming
 
-== ||
+== \\
 
 *Polling*
 
+image::fig_09_01.png[role="pull-right"]
+
 Browser sends HTTP requests at regular intervals and immediately receives a response. However, real- time data is often not that predictable, making unnecessary requests inevitable and as a result, many connections are opened and closed needlessly in low-message-rate situations
 
-image::images/fig_09_01.png[]
-
-== ||
+== \\
 
 *Long Polling*
 
+image::fig_09_02.png[role="pull-right"]
+
 Browser sends a request to the server and the server keeps the request open for a set period of time. If a notification is received within that period, a response containing the message is sent to the client. If a notification is not received within the set time period, the server sends a response to terminate the open request.
 
-image::images/fig_09_02.png[]
 
-== ||
+== \\
 
 *Streaming*
 
-
-image::images/fig_09_03.png[]
+image::fig_09_03.png[role="middle"]
 
 [{topic}]
 == Demo of HTTP Request-Response
 
 [{stepwise}]
-1. Make one HTTP request to the same server (market data)
-2. Analyze HTTP overhead using Google Developer Tools
+* Make one HTTP request to the same server (market data)
+* Analyze HTTP overhead using Google Developer Tools
 
 [{topic}]
 == Server-Side Events
 
+[{statement}]
 What are SSE?
 
 [{topic}]
 == Demo of the Data Push with SSE
 
 [{stepwise}]
-1. The same server pushes market data using SSE 
-2. Analyze SSE overhead using Google Developer Tools
+- The same server pushes market data using SSE 
+- Analyze SSE overhead using Google Developer Tools
 
 [{topic}]
 == Comparing Overhead: HTTP vs SSE vs WebSocket
@@ -150,12 +153,6 @@ What are SSE?
 1. HTP added 478 bytes on top of the data load
 2. SSE added 236 bytes 
 3. WebSocket added 2 bytes
-
-[{topic}]
-==WebSocket JavaScript API
-
-TODO:
-
 
 == ||
 
@@ -174,6 +171,7 @@ ____
 
 
 //[role="topic source lhs"]
+[{topic}]
 == WebSocket JavaScript API
 
 [syntax="javascript"]
@@ -220,14 +218,14 @@ To Start full-duplex communication client should send UPGRADE request
 
 WebSockets really shine with following applications:
 
-[{stepwise}]
+[role="incremental scatter"]
 - Live trading/sports ticker
 - Controlling medical equipment over the web
 - Chat applications
 - Multiplayer online games
 - Realtime updating social streams
 
-/[role="topic source lhs"]
+//[role="topic source lhs"]
 [role="topic"]
 == WebSocket Interface 
 
@@ -262,28 +260,16 @@ interface WebSocket : EventTarget {
 };
 ----------------------------------------------------------------------
 
-
-
-[{ending}, hrole="name"]
-== Thank you for your attention!
-
-[role="footer"]
-{website}
-
-
-////
-
-
 [{topic}]
 == Proxies and WebSockets
 
-We use [http://nginx.com/]NGINX as:
+We use http://nginx.com/[NGINX] as:
 
 * load balancer between Java server
-*  a proxy server to serve images and text files
-*  SSL offloader (HTTPS to HTTP conversion). 
+* a proxy server to serve images and text files
+* SSL offloader (HTTPS to HTTP conversion). 
 
- Recently NGINX started supporting WebSockets protocol.
+Recently NGINX started supporting WebSockets protocol.
 
 == Useful links
 
@@ -299,3 +285,9 @@ We use [http://nginx.com/]NGINX as:
 == Contact Information
 
 TODO
+
+[{ending}, hrole="name"]
+== Thank you for your attention!
+
+[role="footer"]
+{website}
