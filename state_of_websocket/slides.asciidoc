@@ -12,35 +12,34 @@
 //
 *WebSocket* The Current State of the Most Valuable HTML5 API
 ==============================================================
-Viktor Gamov, @gamussa <viktor.gamov@faratasystems.com>
+Viktor Gamov <viktor.gamov@faratasystems.com>
 v0.1, Feb 24, 2013
-:title: WebSockets: The Current State of the Most Valuable HTML5 API
+:title: WebSocket: The Current State of the Most Valuable HTML5 API
 :description: Slides for presentation about WebSocket HTML5 API.
 :copyright: CC BY-SA 2.0
 :website: http://faratasystems.com
+:author_title: Sr. Software Engineer
+:corpname: Farata Systems
 :imagesdir: images
 :backend: dzslides
 :linkcss: true
-:dzslides-style: stormy
-:dzslides-transition: fade
+:dzslides-style: tomorrow
+:dzslides-transition: horizontal-slide
 :dzslides-fonts: family=Yanone+Kaffeesatz:400,700,200,300&family=Cedarville+Cursive
 :dzslides-highlight: github
+:dzslides-aspect: 4-3
 // disable syntax highlighting unless turned on explicitly
 :syntax: no-highlight
 
 [{topic}]
-== About Myself
+== What you should expect to learn today
 
-image::cover.png[role='pull-right']
-
-- A software architect [detail]#at the software boutique http://faratasystems.com[*Farata Systems*]#
-- A co-author of the upcoming O'Reilly book *"Enterprise Web Development"*
-- Main skills [detail]#*Java* and *HTML5*#
+image::twowaytraffic.jpg[role="middle stretch-y"]
 
 [{topic}]
 == What I will tell you today
 
-[role="incremental scatter"]
+[role="incremental"]
 - Demo 
 - What went over the wire
 - How Server-Side Events would do this
@@ -55,7 +54,7 @@ image::cover.png[role='pull-right']
 
 [{stepwise}]
 * The cast:
-** Server [detail]#Oracle GlassFish 4, that supports#
+** Server [detail]#Oracle GlassFish 4#
 ** Client [detail]#HTML/JavaScript/Ext JS framework#
 ** Browser [detail]#Google Chrome#
 * The plot:
@@ -68,7 +67,7 @@ image::cover.png[role='pull-right']
 ==  \\
 
 [{statement}]
-Running Demo
+*Demo*
 
 [{topic}]
 ==  Counting overhead
@@ -108,17 +107,17 @@ image::html5_connectivity.png[role="pull-right"]
 
 *Polling*
 
-image::fig_09_01.png[role="pull-right"]
+image::fig_09_01.png[role="middle"]
 
-Browser sends HTTP requests at regular intervals and immediately receives a response. However, real- time data is often not that predictable, making unnecessary requests inevitable and as a result, many connections are opened and closed needlessly in low-message-rate situations
+//NOTE: Browser sends HTTP requests at regular intervals and immediately receives a response. However, real- time data is often not that predictable, making unnecessary requests inevitable and as a result, many connections are opened and closed needlessly in low-message-rate situations
 
 == \\
 
 *Long Polling*
 
-image::fig_09_02.png[role="pull-right"]
+image::fig_09_02.png[role="middle"]
 
-Browser sends a request to the server and the server keeps the request open for a set period of time. If a notification is received within that period, a response containing the message is sent to the client. If a notification is not received within the set time period, the server sends a response to terminate the open request.
+//NOTE: Browser sends a request to the server and the server keeps the request open for a set period of time. If a notification is received within that period, a response containing the message is sent to the client. If a notification is not received within the set time period, the server sends a response to terminate the open request.
 
 
 == \\
@@ -150,9 +149,12 @@ What are SSE?
 [{topic}]
 == Comparing Overhead: HTTP vs SSE vs WebSocket
 
-1. HTP added 478 bytes on top of the data load
-2. SSE added 236 bytes 
-3. WebSocket added 2 bytes
+On the top of the data load: 
+
+[{stepwise}]
+* HTTP added *478 bytes* 
+* SSE added *236 bytes* 
+* WebSocket added *2 bytes*
 
 == ||
 
@@ -208,9 +210,9 @@ else {output("WebSocket not supported in your browser");}
 To Start full-duplex communication client should send UPGRADE request
 
 [{stepwise-alt}]
-- SEND UPGRADE REQUEST
-- RECEIVE UPGRADE RESPONSE
-- CHANGE READYSTATE TO `open`
+- SEND +UPGRADE+ REQUEST
+- RECEIVE +UPGRADE+ RESPONSE
+- CHANGE +READYSTATE+ TO `open`
 - LISTEN `message` EVENT
 
 [{recap-final}]
@@ -225,41 +227,6 @@ WebSockets really shine with following applications:
 - Multiplayer online games
 - Realtime updating social streams
 
-//[role="topic source lhs"]
-[role="topic"]
-== WebSocket Interface 
-
-[syntax="java"]
-----------------------------------------------------------------------
-[Constructor(DOMString url, optional (DOMString or DOMString[]) protocols)]
-interface WebSocket : EventTarget {
-  readonly attribute DOMString url;
-
-  // ready state
-  const unsigned short CONNECTING = 0;
-  const unsigned short OPEN = 1;
-  const unsigned short CLOSING = 2;
-  const unsigned short CLOSED = 3;
-  readonly attribute unsigned short readyState;
-  readonly attribute unsigned long bufferedAmount;
-
-  // networking
-  [TreatNonCallableAsNull] attribute Function? onopen;
-  [TreatNonCallableAsNull] attribute Function? onerror;
-  [TreatNonCallableAsNull] attribute Function? onclose;
-  readonly attribute DOMString extensions;
-  readonly attribute DOMString protocol;
-  void close([Clamp] optional unsigned short code, optional DOMString reason);
-
-  // messaging
-  [TreatNonCallableAsNull] attribute Function? onmessage;
-           attribute DOMString binaryType;
-  void send(DOMString data);
-  void send(ArrayBufferView data);
-  void send(Blob data);
-};
-----------------------------------------------------------------------
-
 [{topic}]
 == Proxies and WebSockets
 
@@ -271,23 +238,20 @@ We use http://nginx.com/[NGINX] as:
 
 Recently NGINX started supporting WebSockets protocol.
 
+[{topic}]
 == Useful links
 
 * http://enterprisewebbook.com/[Enterprise Web Development book]
 * http://www.w3.org/TR/websockets/ 
 * http://tools.ietf.org/html/rfc6455 
-* http://tomcat.apache.org/tomcat-7.0-doc/web-socket-howto.html
-* http://websocket-sdk.java.net/Introduction.html
-* https://github.com/Atmosphere/atmosphere/wiki/Supported-WebServers-and-Browsers
-* http://autobahn.ws/testsuite
 
 [{topic}]
-== Contact Information
+== Upcoming book from *O'Reilly*
 
-TODO
+image::cover.png[role='middle']
 
 [{ending}, hrole="name"]
-== Thank you for your attention!
+== Thank you!
 
 [role="footer"]
-{website}
+http://enterprisewebbook.com
