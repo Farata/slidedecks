@@ -32,7 +32,7 @@ v0.1, Feb 24, 2013
 :syntax: no-highlight
 
 [{topic}]
-== What you should expect to learn today
+== All cool technologies in one picture
 
 image::twowaytraffic.jpg[role="middle stretch-y"]
 
@@ -58,10 +58,11 @@ image::twowaytraffic.jpg[role="middle stretch-y"]
 ** Client [detail]#HTML/JavaScript/Ext JS framework#
 ** Browser [detail]#Google Chrome#
 * The plot:
-** client and server use two WebScocket connections and start 
-** Pushing market data quotes [detail]#(10 per second). Portfolio size: 50 stocks#
-** Pushing Order execution notifications
+** Pushing market data quotes [detail]#10 per second. Portfolio size: 50 stocks#
 
+// ** compare with SSE traffic 
+// ** client and server use two WebScocket connections and start 
+// ** Pushing Order execution notifications
 // TODO: Add an image of the architecture of the demo
 
 ==  \\
@@ -70,30 +71,91 @@ image::twowaytraffic.jpg[role="middle stretch-y"]
 *Demo*
 
 [{topic}]
-==  Counting overhead
+== What just happened?
 
 Every data push had:
 
 * Payload size: 
-** Market data: from 23 to 25 bytes
-** Order notification: 30 bytes 
-* WebSocket overhead: 2 bytes in each case
+** Market data: from *23* to *25* bytes
+** Order notification: *30* bytes 
+* WebSocket overhead: *2* bytes in each case
 
 // TODO: Add a sample JSON string for market data and for order execution   
 
+[source,javascript]
+----------------------------------------------------------------------
+{"symbol": "APPL", "id": 555, "price": "451.29"}
+----------------------------------------------------------------------
+
+== ||
+
+[quote, Ian Hickson, www.ietf.org/mail-archive/web/hybi/current/msg00784.html]
+____
+Reducing kilobytes of data to 2 bytes... and reducing latency from 150ms to 50 ms is far more than marginal. In fact, these two factors alone are enough to make WebSocket seriously interesting...
+____
+
 [{topic}]
-==  What's HTML5 WebSocket
+== Meet the *WEB SOCKET*
 
 image::html5_connectivity.png[role="pull-right"]
 
 [{stepwise}]
-- It's HTML5 standard API
-- It's a full duplex protocol
-- Starts as a handshake via open ports 80 and 443
-- Upgrades the protocol from HTTP to Websockets
-- From this point no more HTTP
+* STANDARD PROTOCOL [detail]#It's a standardized technology (RFC6455).#
+* CLIENT-SIDE API [detail]#New +window.WebSocket+ object. No plugin required#
+* SERVER-SIDE API [detail]#Check your favorite language for WebSocket server support#
 
-//image::HTML5_Connectivity_512.png[role="middle", scaleheight=50%, scaleweight=50%] 
+[role="topic"]
+== WebSocket handshake
+To Start full-duplex communication client should send HTTP `UPGRADE` request
+
+[{stepwise-alt}]
+- SEND +UPGRADE+ REQUEST
+- RECEIVE +UPGRADE+ RESPONSE
+- CHANGE +READYSTATE+ TO `open`
+- LISTEN `message` EVENT
+
+//[role="topic source lhs"]
+[{topic}]
+== WebSocket JavaScript API
+
+[syntax="javascript"]
+----------------------------------------------------------------------
+var ws;
+if (window.WebSocket) {
+    output("WebSocket supported in your browser");
+    ws = new WebSocket("ws://www.websockets.org");
+
+    // Set event handlers.
+    ws.onopen = function () {
+        output("onopen");
+    };
+    ws.onmessage = function (e) {
+        // e.data contains received string.
+        output("echo from server : " + e.data);
+    };
+    ws.onclose = function () {
+        output("onclose");
+    };
+    ws.onerror = function () {
+        output("onerror");
+    };
+
+}
+else {output("WebSocket not supported in your browser");}
+----------------------------------------------------------------------
+
+[{topic}]
+== Server-Sent Events
+
+[{statement}]
+What are *SSE*?
+
+[{topic}]
+== Demo of the Data Push with SSE
+
+[{stepwise-alt}]
+- The same server pushes market data using SSE 
+- Analyze SSE overhead using Google Developer Tools
 
 [{recap-final}]
 == “LEGACY” WEB
@@ -129,22 +191,12 @@ image::fig_09_03.png[role="middle"]
 [{topic}]
 == Demo of HTTP Request-Response
 
-[{stepwise}]
-* Make one HTTP request to the same server (market data)
-* Analyze HTTP overhead using Google Developer Tools
-
-[{topic}]
-== Server-Side Events
-
 [{statement}]
-What are SSE?
+*Demo*
 
-[{topic}]
-== Demo of the Data Push with SSE
-
-[{stepwise}]
-- The same server pushes market data using SSE 
-- Analyze SSE overhead using Google Developer Tools
+//[{stepwise}]
+//* Make one HTTP request to the same server (market data)
+//* Analyze HTTP overhead using Google Developer Tools
 
 [{topic}]
 == Comparing Overhead: HTTP vs SSE vs WebSocket
@@ -156,64 +208,52 @@ On the top of the data load:
 * SSE added *236 bytes* 
 * WebSocket added *2 bytes*
 
-== ||
+[{recap-final}]
+== or delusion?
 
-[quote, www.ietf.org/mail-archive/web/hybi/current/msg00784.html]
-____
-Reducing kilobytes of data to 2 bytes... and reducing latency from 150ms to 50 ms is far more than marginal. In fact, these two factors alone are enough to make WebSocket seriously interesting...
-____
+WebSocket: Known Facts
+
+[{stepwise}]
+* WS protocol has security flaws
+* WS doesn't work with proxies
+* Poor support of browsers
+* WebSockets only for browsers
+* WebSocket not easy hide behind load balancer
+* How to keep connection alive
 
 [{topic}]
-== Meet the *WEB SOCKET*
+== Masked Frames
 
-[{stepwise-alt}]
-* STANDARD PROTOCOL [detail]#Websocket is a standardized technology (described in RFC6455) to support low‐overhead bidirectional traffic from your Web browser.#
-* CLIENT-SIDE API [detail]#HTML5 specification introduces WebSocket client side object. No plugin required#
-* SERVER-SIDE API [detail]#True real-time server updates. Expected large penetration in Java world with upcoming JavaEE 7 spec and JSR-356#
+[{statement}]
+image::masked.jpg[role="middle"]
 
-
-//[role="topic source lhs"]
 [{topic}]
-== WebSocket JavaScript API
+== WebSocket and Proxies
 
-[syntax="javascript"]
-----------------------------------------------------------------------
-var ws;
-if (window.WebSocket) {
-    output("WebSocket supported in your browser");
-    ws = new WebSocket("ws://www.websockets.org");
+image::the-internet-a-series-of-tubes.jpg[role="middle"]
 
-    // Set event handlers.
-    ws.onopen = function () {
-        output("onopen");
-    };
-    ws.onmessage = function (e) {
-        // e.data contains received string.
-        output("echo from server : " + e.data);
-    };
-    ws.onclose = function () {
-        output("onclose");
-    };
-    ws.onerror = function () {
-        output("onerror");
-    };
+[{topic}]
+== My browser has it!
 
-}
-else {output("WebSocket not supported in your browser");}
-----------------------------------------------------------------------
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+<iframe width=100% height=100% seamless src="http://caniuse.com/websockets/embed/"></iframe>
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-//[{intro}]
-//== *Side* by{nbsp}**side**
+[{topic}]
+== Load Balancing
 
-[role="topic"]
-== WebSocket handshake
-To Start full-duplex communication client should send UPGRADE request
+We use http://nginx.com/[NGINX] as:
 
-[{stepwise-alt}]
-- SEND +UPGRADE+ REQUEST
-- RECEIVE +UPGRADE+ RESPONSE
-- CHANGE +READYSTATE+ TO `open`
-- LISTEN `message` EVENT
+* load balancer between Java server
+* a proxy server to serve images and text files
+* SSL offloader (HTTPS to HTTP conversion). 
+
+Recently NGINX started supporting WebSockets protocol.
+
+[{topic}]
+== Ping-pong: Keeping connection alive
+
+image::ping_pong.gif[role="middle"]
 
 [{recap-final}]
 == USE CASE
@@ -227,16 +267,19 @@ WebSockets really shine with following applications:
 - Multiplayer online games
 - Realtime updating social streams
 
-[{topic}]
-== Proxies and WebSockets
+[{recap-final}]
+== What to use anyway?
 
-We use http://nginx.com/[NGINX] as:
+[{stepwise-alt}]
+* WebSockets [detail]#if you need bidirectional communication# 
+* Server-Sent Events [detail]#just for server side push#
+* Long-polling [detail]#for fall back#
 
-* load balancer between Java server
-* a proxy server to serve images and text files
-* SSL offloader (HTTPS to HTTP conversion). 
+[{recap-final}]
+== Frameworks, please?
 
-Recently NGINX started supporting WebSockets protocol.
+[{statement}]
+*TBD*
 
 [{topic}]
 == Useful links
