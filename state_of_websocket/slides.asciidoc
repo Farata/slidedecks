@@ -32,33 +32,45 @@ v0.1, Feb 24, 2013
 :syntax: no-highlight
 
 [{topic}]
+== Farata Systems - The Expert Consultancy
+
+image::farata.png[role="middle stretch-y"]
+
+[{topic}]
 == All cool technologies in one picture
 
 image::twowaytraffic.jpg[role="middle stretch-y"]
 
 [{topic}]
-== What I will tell you today
+== What you should expect to experience today
 
 [role="incremental"]
-- Demo 
+- Demo
+- Meet *WebSocket*
 - What went over the wire
-- How Server-Side Events would do this
+- How *Server-Sent Events* would do this
 - How the legacy HTTP would do this
-- Meet WebSocket
-- What's one the server
-- How about proxies
-- A word about security
+- Demystifying WebSockets
+
+== \\
+
+[{statement}]
+*Demo*
+
+// == \\
+//
+//image::nothing_to_do_here.jpg[role="middle"]
 
 [{topic}]
 == Demo: Server-Side Push with WebSockets
 
 [{stepwise}]
-* The cast:
+* The cast (my personal preferences) :
 ** Server [detail]#Oracle GlassFish 4#
 ** Client [detail]#HTML/JavaScript/Ext JS framework#
-** Browser [detail]#Google Chrome#
+** Browser [detail]#Google Chrome Canary#
 * The plot:
-** Pushing market data quotes [detail]#10 per second. Portfolio size: 50 stocks#
+** Pushing market data quotes [detail]#20 per second. Stock portfolio size: 12 stocks#
 
 // ** compare with SSE traffic 
 // ** client and server use two WebScocket connections and start 
@@ -70,15 +82,20 @@ image::twowaytraffic.jpg[role="middle stretch-y"]
 [{statement}]
 *Demo*
 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+<!--
+<iframe width=100% height=100% seamless src="http://localhost:8080/html5devconf_demo/"></iframe>
+-->
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 [{topic}]
 == What just happened?
 
 Every data push had:
 
 * Payload size: 
-** Market data: from *23* to *25* bytes
-** Order notification: *30* bytes 
-* WebSocket overhead: *2* bytes in each case
+** Market data: from *42* to *45* bytes
+* WebSocket overhead: *2* bytes in each case + overhead of HTTP headers on initial handshake
 
 // TODO: Add a sample JSON string for market data and for order execution   
 
@@ -89,7 +106,7 @@ Every data push had:
 
 == ||
 
-[quote, Ian Hickson, www.ietf.org/mail-archive/web/hybi/current/msg00784.html]
+[quote, Ian Hickson (Google), www.ietf.org/mail-archive/web/hybi/current/msg00784.html]
 ____
 Reducing kilobytes of data to 2 bytes... and reducing latency from 150ms to 50 ms is far more than marginal. In fact, these two factors alone are enough to make WebSocket seriously interesting...
 ____
@@ -104,15 +121,25 @@ image::html5_connectivity.png[role="pull-right"]
 * CLIENT-SIDE API [detail]#New +window.WebSocket+ object. No plugin required#
 * SERVER-SIDE API [detail]#Check your favorite language for WebSocket server support#
 
+== \\
+
+[{statement}]
+*Handshake*
+
+[{topic}]
+== Client and Server must to negotiate in known form
+
+image::approve.gif[role="middle"]
+
 [role="topic"]
 == WebSocket handshake
-To Start full-duplex communication client should send HTTP `UPGRADE` request
+Here is sequence of the steps of initial handshake
 
-[{stepwise-alt}]
-- SEND +UPGRADE+ REQUEST
-- RECEIVE +UPGRADE+ RESPONSE
-- CHANGE +READYSTATE+ TO `open`
-- LISTEN `message` EVENT
+[{stepwise}]
+- Client sends +UPGRADE+ HTTP-request 
+- Server confirms +UPGRADE+
+- Client receives +UPGRADE+ response
+- Client changes +readyState+ property of WebSocket object to `open`
 
 //[role="topic source lhs"]
 [{topic}]
@@ -122,26 +149,25 @@ To Start full-duplex communication client should send HTTP `UPGRADE` request
 ----------------------------------------------------------------------
 var ws;
 if (window.WebSocket) {
-    output("WebSocket supported in your browser");
-    ws = new WebSocket("ws://www.websockets.org");
-
+    console.log("WebSocket supported in your browser");
+    ws = new WebSocket("ws://echo.websocket.org");
     // Set event handlers.
     ws.onopen = function () {
-        output("onopen");
+        console.log("onopen");
     };
     ws.onmessage = function (e) {
         // e.data contains received string.
-        output("echo from server : " + e.data);
+        console.log("echo from server : " + e.data);
     };
     ws.onclose = function () {
-        output("onclose");
+        console.log("onclose");
     };
     ws.onerror = function () {
-        output("onerror");
+        console.log("onerror");
     };
-
 }
-else {output("WebSocket not supported in your browser");}
+else {console.log("WebSocket not supported in your browser");}
+if (ws.readyState === 1){ ws.send("Hello WebSocket!"); }
 ----------------------------------------------------------------------
 
 [{topic}]
@@ -153,9 +179,18 @@ What are *SSE*?
 [{topic}]
 == Demo of the Data Push with SSE
 
-[{stepwise-alt}]
-- The same server pushes market data using SSE 
-- Analyze SSE overhead using Google Developer Tools
+[{statement}]
+*Demo*
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+<!--
+<iframe width=100% height=100% seamless src="http://localhost:8080/html5devconf_demo/"></iframe>
+-->
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//[{stepwise-alt}]
+//- The same server pushes market data using SSE 
+//- Analyze SSE overhead using Google Developer Tools
 
 [{recap-final}]
 == “LEGACY” WEB
@@ -194,6 +229,15 @@ image::fig_09_03.png[role="middle"]
 [{statement}]
 *Demo*
 
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+<!--
+<iframe width=100% height=100% seamless src="http://localhost:8080/html5devconf_demo/"></iframe>
+-->
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//[{statement}]
+//*Demo*
+
 //[{stepwise}]
 //* Make one HTTP request to the same server (market data)
 //* Analyze HTTP overhead using Google Developer Tools
@@ -201,12 +245,15 @@ image::fig_09_03.png[role="middle"]
 [{topic}]
 == Comparing Overhead: HTTP vs SSE vs WebSocket
 
-On the top of the data load: 
+//On the top of the data load: 
 
 [{stepwise}]
-* HTTP added *478 bytes* 
-* SSE added *236 bytes* 
-* WebSocket added *2 bytes*
+* HTTP added *429 bytes* request and *268 bytes* response headers
+** response *46* bytes
+* SSE added *406 bytes* request and *227 bytes* response headers
+** plus *8 bytes* message wrapper
+* WebSocket added to Upgrade request *87 bytes* (header) and *442 bytes* (body)
+** added *2 bytes* for each client-to-server message
 
 [{recap-final}]
 == or delusion?
@@ -214,12 +261,21 @@ On the top of the data load:
 WebSocket: Known Facts
 
 [{stepwise}]
-* WS protocol has security flaws
 * WS doesn't work with proxies
 * Poor support of browsers
 * WebSockets only for browsers
 * WebSocket not easy hide behind load balancer
 * How to keep connection alive
+
+[{topic}]
+== WebSocket and Proxies
+
+image::the-internet-a-series-of-tubes.jpg[role="middle"]
+
+== \\
+
+[{statement}]
+_tl; dr_ Note sure about proxies - use *TLS/SSL*
 
 [{topic}]
 == Masked Frames
@@ -228,16 +284,52 @@ WebSocket: Known Facts
 image::masked.jpg[role="middle"]
 
 [{topic}]
-== WebSocket and Proxies
-
-image::the-internet-a-series-of-tubes.jpg[role="middle"]
-
-[{topic}]
 == My browser has it!
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 <iframe width=100% height=100% seamless src="http://caniuse.com/websockets/embed/"></iframe>
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[{topic}]
+== Is WebSocket only for browser?
+
+image::everythere.jpg[role="middle"]
+
+[{recap-final}]
+== Frameworks, please?
+
+Clients:
+
+[{stepwise}]
+* JAVA:
+** https://github.com/AsyncHttpClient/async-http-client[AsyncHTTP Client]
+** http://autobahn.ws/android[AutobahnAndroid]
+* iOS:
+** https://github.com/square/SocketRocket[the SocketRocket]
+
+[{recap-final}]
+== Frameworks, please?
+
+Server:
+
+* Python
+** http://www.tornadoweb.org/en/stable/websocket.html[Tornado]
+* Php 
+** https://github.com/nicokaiser/php-websocket[Wrench]
+* JavaScript (Node)
+** http://einaros.github.com/ws/[WS]
+** http://socket.io/[Socket.IO]
+
+[{recap-final}]
+== Frameworks, please?
+
+vert.x to rule them all:
+
+[{stepwise}]
+* JVM-based runtime
+* simple
+* scalable
+* several programming languages in a single app [detail]#JavaScript, CoffeeScript, Ruby, Python, Groovy or Java#
 
 [{topic}]
 == Load Balancing
@@ -248,10 +340,10 @@ We use http://nginx.com/[NGINX] as:
 * a proxy server to serve images and text files
 * SSL offloader (HTTPS to HTTP conversion). 
 
-Recently NGINX started supporting WebSockets protocol.
+Recently NGINX team added WebSockets protocol support
 
 [{topic}]
-== Ping-pong: Keeping connection alive
+== Ping-Pong frames: Keeping connection alive
 
 image::ping_pong.gif[role="middle"]
 
@@ -265,7 +357,12 @@ WebSockets really shine with following applications:
 - Controlling medical equipment over the web
 - Chat applications
 - Multiplayer online games
-- Realtime updating social streams
+- Real-time updating social streams
+- Tools protocols (LiveReload)
+
+== \\
+
+image::not_sure.jpg[role="middle stretch-y"]
 
 [{recap-final}]
 == What to use anyway?
@@ -273,25 +370,21 @@ WebSockets really shine with following applications:
 [{stepwise-alt}]
 * WebSockets [detail]#if you need bidirectional communication# 
 * Server-Sent Events [detail]#just for server side push#
-* Long-polling [detail]#for fall back#
-
-[{recap-final}]
-== Frameworks, please?
-
-[{statement}]
-*TBD*
-
-[{topic}]
-== Useful links
-
-* http://enterprisewebbook.com/[Enterprise Web Development book]
-* http://www.w3.org/TR/websockets/ 
-* http://tools.ietf.org/html/rfc6455 
+* Long-polling [detail]#for fallback and emulation#
 
 [{topic}]
 == Upcoming book from *O'Reilly*
 
 image::cover.png[role='middle']
+
+[{topic}]
+== Useful links
+
+* http://enterprisewebbook.com/[Enterprise Web Development book]
+* http://www.apress.com/9781430247401[The Definitive Guide to HTML5 WebSocket]
+* http://www.w3.org/TR/websockets/ 
+* http://tools.ietf.org/html/rfc6455 
+* http://www.w3.org/TR/eventsource/
 
 [{ending}, hrole="name"]
 == Thank you!
